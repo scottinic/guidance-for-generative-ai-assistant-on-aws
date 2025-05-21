@@ -60,11 +60,12 @@ _You are responsible for the cost of the AWS services used while running this Gu
 
 ## Prerequisites
 
-[Python 3.9](https://www.python.org/) or greater
+1. Make sure you have  [Python 3.9](https://www.python.org/) or greater installed on your local system. To install python and create virtual environment follow this article: https://repost.aws/knowledge-center/ec2-linux-python3-boto3 .
+2. Amazon Simple Storage Service (S3) bucket in same AWS account and AWS Region.
 
 ### AWS account requirements 
 -   You must have AWS account to deploy this solution.
--   [Amazon Simple Storage Service(S3) bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html) to stage Lambda function files and Amazon CloudFormation stack.
+-   [Amazon Simple Storage Service(S3) bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html) to stage Lambda function dependency files.
 -   In your AWS account, select your AWS Region and request access for Foundational Models _Amazon Nova Micro_ and _anthropic.claude-3.5-sonnet_ on Amazon Bedrock.
 
  ![Amazon Bedrock](images/Bedrock1.png)
@@ -86,16 +87,24 @@ _You are responsible for the cost of the AWS services used while running this Gu
     -   Create a GitHub fine-grained access token for the new repository by following [this guide](https://docs.aws.amazon.com/amplify/latest/userguide/setting-up-GitHub-access.html). Refer section **Generate a personal access token in your GitHub account**.
 
 
-2. Download Amazon [Lambda function](src/assets/genai-assistant-lambda-function.zip) and [Amazon Lambda dependencies](src/assets/genai-assistant-backend_layer.zip) and upload to your Amazon S3 bucket in same AWS Region where you will deploy this solution.
-3. Download AWS CloudFormation template [guidance-for-genai-assistant.yaml](guidance-for-genai-assistant.yaml) from the GitHub repository to your local system. Update your Amazon S3 bucket name for Amazon Lambda function code and Lambda Layer.
+2. Download AWS CloudFormation template [guidance-for-genai-assistant.yaml](src/assets/guidance-for-genai-assistant.yaml) from the GitHub repository to your local system.  
 
-   ```json
-   S3Bucket: <YOUR AMAZON S3 BUCKET NAME> 
-   ```
-
-4. Deploy updated CloudFormation template to deploy the solution.
+3. Create new [Amazon CloudFromation stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) using above downloaded template.
 
  ![Amazon CloudFormation Output](images/CFN_Parameters.png)
+
+4. Once CloudFormation stack deployoed successfully, navigate to output tab and note Amazon Lambda Function name.
+
+ ![Amazon CloudFormation Lambda Function](images/CFN_output_LambdaFunction.png) 
+
+5. Now to build Amazon Lambda function dependencies, download [requirements.txt](src/assets/requirements.txt) and [create_lambda_dependencies.sh](src/assets/create_lambda_dependencies.sh) files in same folder on your local system. Run
+
+```bash
+./create_lambda_dependencies.sh <your-Lambda-function-name> <your-S3-bucket-name>
+```
+
+Example: 
+./create_lambda_dependencies.sh genai-assistant-function my-s3-bucket
 
 
 
@@ -122,6 +131,10 @@ If the build does not start automatically, trigger it through the Amplify consol
 
 
 5. If you selected to run the frontend locally and connect to the deployed resources in AWS, use the CloudFormation stack outputs to verify deployed resources.
+
+6. Navigate to Amazon Lambda console, open lambda function deployed and verify Lambda layer is attached to the function
+ 
+ ![Amazon Lambda Layer](images/lambda_layer.png)
 
 
 
