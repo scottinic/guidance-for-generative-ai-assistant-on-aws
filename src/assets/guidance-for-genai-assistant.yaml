@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Deploy GenAI-Assistant solution on AWS.
+Description: Deploy GenAI-Assistant solution on AWS(SO9026).
 
 Parameters:
   TokenGithubOauth:
